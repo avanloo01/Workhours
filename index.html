@@ -1,0 +1,186 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<title>Your Workhours</title>
+<style>
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #cfd6db;
+}
+.row{
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.card {
+  /*float: left;*/
+  max-width: 33.333%;
+  padding: .75rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  border: 0;
+  border-color: black;
+  background-color: #b7c5d1;
+  border-radius: 25px;
+  display: inline-block;
+  flex-basis: 33.333%;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.card {
+  margin-bottom: .75rem;
+}
+
+.card-text {
+  font-size: 90%;
+  text-align: center;
+}
+
+.dateTitle {
+  text-align: center;
+}
+.float{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	right:40px;
+	background-color:#b7c5d1;
+	color:#000000;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+.plusImg {
+ height: 40px;
+ width: 40px;
+ right: 49px;
+ bottom: 48px;
+ box-shadow: none;
+}
+</style>
+</head>
+<body>
+
+<h2>You must 🐝 a busy 🐝</h2>
+<p>Calculate the number of hours you worked.</p>
+
+<div class="container">
+  <div class="row" id="rowOfCards">
+    
+  </div>
+</div>
+
+<canvas id="myChart" width="800" height="400"></canvas>
+<script>
+let hoursPerMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let dates = [];
+let hours = [];
+let currentYear = new Date().getFullYear();
+chartIt();
+async function chartIt(){
+	await getData();
+	var ctx = document.getElementById('myChart').getContext('2d');
+	var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+            label: '# of hours per month',
+            data: hoursPerMonth,
+            backgroundColor: [
+                'rgba(125, 176, 141, 1)',
+                'rgba(137, 122, 171, 1)',
+                'rgba(185, 138, 170, 1)',
+                'rgba(202, 174, 164, 1)',
+                'rgba(213, 206, 189, 1)',
+                'rgba(157, 182, 198, 1)'
+            ],
+            borderColor: [
+                'rgba(125, 176, 141, 1)',
+                'rgba(137, 122, 171,  1)',
+                'rgba(185, 138, 170, 1)',
+                'rgba(202, 174, 164, 1)',
+                'rgba(213, 206, 189, 1)',
+                'rgba(157, 182, 198, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+           	beginAtZero: true
+            }
+        },
+	maintainAspectRatio: false,
+	responsive: false,
+    }
+});
+}
+
+async function getData() {
+	const response = await fetch('data.csv');
+	const table = await response.text();
+	
+	const rows = table.split('\n').slice(1);
+	
+	rows.forEach(elt => {
+		const row = elt.split(',');
+		dates.push(row[0]);
+		hours.push(Number(row[1]));
+		
+		//Creating the cards from the csv-data
+		var div = document.createElement("div");
+		div.setAttribute("class", "card");
+		
+		//initializing date
+		var dateHeader = document.createElement("h3");
+		dateHeader.setAttribute("class", "dateTitle");
+		dateHeader.innerHTML = row[0];
+		
+		//initializing hours
+		var hoursParagraph = document.createElement("P");
+		hoursParagraph.setAttribute("class", "card-text");
+		hoursParagraph.innerHTML = "Hours: " + row[1];
+		
+		//Adding date & hours to card
+		div.appendChild(dateHeader);
+		div.appendChild(hoursParagraph);
+		
+		//Adding card to the row of cards
+		document.getElementById("rowOfCards").appendChild(div);		
+	});
+	dates.forEach((date, i) => {
+                for(var month = 0; month < 12; month++){
+                        if((month+1).toString().length == 2){
+
+                                if(date.includes('/' +(month+1).toString()) && date.substring(6,10) == currentYear.toString()){
+                                        hoursPerMonth[month] += hours[i];
+                                }
+                        }
+                        else{
+
+                                if(date.includes('/0'+(month+1).toString()) && date.substring(6,10) == currentYear.toString()){
+                                        hoursPerMonth[month] += hours[i];
+                                }
+                        }
+                }
+});
+}
+//console.log(hoursPerMonth);
+
+</script>
+<a href="add" class="float">
+<img src="Plus.png" class="float plusImg" alt="Go to add page"></img>
+</a>
+</body>
+</html>
+

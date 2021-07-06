@@ -1,0 +1,31 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>Add a new element</title>
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #cfd6db;
+}
+input[type=submit] {
+	background-color: #b7c5d1;
+	border-radius: 15px;
+	border-color: #b7c5d1;
+	width: 150px;
+	height: 50px;
+	cursor: pointer;
+	marginLeft: 30px;
+}
+</style>
+</head>
+<body>
+<h2>Add a new date on which you worked</h2>
+<form name="adding" action="http://127.0.0.1:1337/process_post" method="POST">
+<label>Date (dd/mm/yyyy):</label><br>
+<input type="text" name="date" placeholder="e.g., 25/08/2021" required><br><br>
+<label>Hours you worked that day:</label><br>
+<input type="text" name="hours" placeholder="e.g., 8" required><br><br>
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
